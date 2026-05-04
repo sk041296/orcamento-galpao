@@ -12,17 +12,31 @@ export default function GalpaoDashboard() {
   const [erro, setErro] = useState(null);
 
   // Busca dados da API do Google Sheets
+ // Busca dados da API do Google Sheets via JSONP (contorna CORS)
   useEffect(() => {
-    fetch(API_URL)
-      .then(r => r.json())
-      .then(d => {
-        if (d.erro) { setErro(d.erro); setCarregando(false); return; }
-        setDados(d);
+    const callbackName = 'orcamentoCallback_' + Date.now();
+    window[callbackName] = (d) => {
+      if (d && d.erro) { setErro(d.erro); setCarregando(false); }
+      else { setDados(d); setCarregando(false); }
+      delete window[callbackName];
+      document.head.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = `${API_URL}?callback=${callbackName}`;
+    script.onerror = () => {
+      setErro('Não foi possível conectar à planilha. Verifique se a API está publicada como "Anyone".');
+      setCarregando(false);
+    };
+    document.head.appendChild(script);
+    // Timeout de 15 segundos
+    const timeout = setTimeout(() => {
+      if (carregando) {
+        setErro('Tempo esgotado ao buscar dados da planilha.');
         setCarregando(false);
-      })
-      .catch(e => { setErro(e.toString()); setCarregando(false); });
+      }
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
-
   // Animação do número total
   useEffect(() => {
     if (!dados) return;
