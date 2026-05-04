@@ -161,3 +161,357 @@ export default function GalpaoDashboard() {
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 40px', position: 'relative', zIndex: 1 }}>
         {/* HEADER */}
+        <header style={{ borderBottom: '2px solid #FF6B00', paddingBottom: '24px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '24px' }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: '#FF6B00', color: '#000', fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em', marginBottom: '14px' }}>
+                <div style={{ width: '6px', height: '6px', background: '#000', animation: 'pulse-orange 2s infinite' }} />
+                ORÇAMENTO N° 2026/047 · DADOS EM TEMPO REAL
+              </div>
+              <h1 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 900, margin: 0, lineHeight: 0.95, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
+                Galpão<br />
+                <span style={{ color: '#FF6B00' }}>Industrial</span>
+                <span style={{ color: '#444', fontFamily: "'JetBrains Mono', monospace", fontSize: '0.4em', marginLeft: '12px', letterSpacing: '0', textTransform: 'none', fontWeight: 400 }}>/ {AREA} m²</span>
+              </h1>
+            </div>
+            <div style={{ textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#888' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end', marginBottom: '4px' }}>
+                <MapPin size={12} color="#FF6B00" />
+                <span>RUA LÓTUS · ARAUCÁRIA / PR</span>
+              </div>
+              <div>25°37'11.1"S · 49°22'14.6"W</div>
+              <div style={{ marginTop: '8px', color: '#666' }}>SINCRONIZADO COM PLANILHA · {new Date(dados.timestamp).toLocaleString('pt-BR')}</div>
+            </div>
+          </div>
+        </header>
+
+        {/* KPIs */}
+        <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+          <div className="kpi-card" style={{ gridColumn: 'span 2', background: '#FF6B00', color: '#000', padding: '28px', position: 'relative', border: '1px solid #FF6B00' }}>
+            <div className="corner-mark corner-tl" style={{ borderColor: '#000' }} />
+            <div className="corner-mark corner-tr" style={{ borderColor: '#000' }} />
+            <div className="corner-mark corner-bl" style={{ borderColor: '#000' }} />
+            <div className="corner-mark corner-br" style={{ borderColor: '#000' }} />
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em', marginBottom: '8px' }}>▸ INVESTIMENTO TOTAL</div>
+            <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: 'clamp(38px, 6vw, 64px)', fontWeight: 900, lineHeight: 1, letterSpacing: '-0.03em' }}>{fmtBRLfull(animatedValue)}</div>
+            <div style={{ display: 'flex', gap: '24px', marginTop: '14px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 700 }}>
+              <span>R$ {CUSTO_M2.toLocaleString('pt-BR', { maximumFractionDigits: 0 })} / m²</span>
+              <span>·</span>
+              <span>{dados.capa.prazoMeses} MESES DE EXECUÇÃO</span>
+            </div>
+          </div>
+
+          <div className="kpi-card" style={{ background: '#111', border: '1px solid #222', padding: '24px', position: 'relative' }}>
+            <div className="corner-mark corner-tl" />
+            <div className="corner-mark corner-br" />
+            <Layers size={20} color="#FF6B00" style={{ marginBottom: '12px' }} />
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#888', letterSpacing: '0.15em', marginBottom: '6px' }}>MATERIAIS</div>
+            <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '28px', fontWeight: 900, color: '#fff' }}>{fmtBRLfull(dados.capa.custoMateriais)}</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#FF6B00', marginTop: '4px' }}>{((dados.capa.custoMateriais / TOTAL_DIRETO) * 100).toFixed(1)}% DO DIRETO</div>
+          </div>
+
+          <div className="kpi-card" style={{ background: '#111', border: '1px solid #222', padding: '24px', position: 'relative' }}>
+            <div className="corner-mark corner-tl" />
+            <div className="corner-mark corner-br" />
+            <Wrench size={20} color="#FF6B00" style={{ marginBottom: '12px' }} />
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#888', letterSpacing: '0.15em', marginBottom: '6px' }}>MÃO DE OBRA</div>
+            <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '28px', fontWeight: 900, color: '#fff' }}>{fmtBRLfull(dados.capa.custoMaoObra)}</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#FF6B00', marginTop: '4px' }}>{((dados.capa.custoMaoObra / TOTAL_DIRETO) * 100).toFixed(1)}% DO DIRETO</div>
+          </div>
+        </div>
+
+        {/* TABS */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap', borderBottom: '1px solid #222', paddingBottom: '20px' }}>
+          {[
+            { id: 'overview', label: '◢ Visão Geral' },
+            { id: 'disciplinas', label: '◢ Disciplinas' },
+            { id: 'curva-a', label: '◢ Curva ABC' },
+            { id: 'cronograma', label: '◢ Cronograma' },
+            { id: 'risco', label: '◢ Análise de Risco' },
+          ].map(tab => (
+            <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`} onClick={() => setActiveTab(tab.id)}>{tab.label}</button>
+          ))}
+        </div>
+
+        {activeTab === 'overview' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px' }}>
+            <div style={{ gridColumn: 'span 7', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>01 / COMPOSIÇÃO</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '22px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Custo direto vs administração</h3>
+              </div>
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', height: '60px', border: '1px solid #FF6B00' }}>
+                  <div style={{ width: `${(TOTAL_DIRETO / TOTAL_OBRA) * 100}%`, background: '#FF6B00', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Archivo Black', sans-serif", fontSize: '14px', color: '#000' }}>
+                    CUSTO DIRETO · {((TOTAL_DIRETO / TOTAL_OBRA) * 100).toFixed(1)}%
+                  </div>
+                  <div style={{ flex: 1, background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Archivo Black', sans-serif", fontSize: '12px', color: '#FF6B00' }}>
+                    BDI · {((ADMIN / TOTAL_OBRA) * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ borderLeft: '3px solid #FF6B00', paddingLeft: '14px' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#888', letterSpacing: '0.15em' }}>CUSTO DIRETO</div>
+                  <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '24px', color: '#fff' }}>{fmtBRLfull(TOTAL_DIRETO)}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#666', marginTop: '4px' }}>Materiais + mão de obra</div>
+                </div>
+                <div style={{ borderLeft: '3px solid #555', paddingLeft: '14px' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#888', letterSpacing: '0.15em' }}>ADMIN. DA OBRA</div>
+                  <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '24px', color: '#fff' }}>{fmtBRLfull(ADMIN)}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#666', marginTop: '4px' }}>10% sobre custo direto</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ gridColumn: 'span 5', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>02 / FICHA TÉCNICA</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '22px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Indicadores do projeto</h3>
+              </div>
+              {[
+                { l: 'ÁREA TERRENO', v: dados.capa.areaTerreno + ' m²', det: 'Lote 45m × 15m' },
+                { l: 'ÁREA CONSTRUÍDA', v: dados.capa.areaConstruida + ' m²', det: 'Edificação principal' },
+                { l: 'ÁREA PERMEÁVEL', v: dados.capa.areaPermeavel + ' m²', det: ((dados.capa.permeabilidade)*100).toFixed(0) + '% (mín. zonal)' },
+                { l: 'PAVIMENTAÇÃO PAVER', v: dados.capa.areaPavimentacao + ' m²', det: 'Externa intertravada' },
+                { l: 'TERRAPLENAGEM', v: dados.capa.terraplenagem + ' m³', det: 'Movimentação de terra' },
+                { l: 'ALTURA / PILARES', v: dados.capa.peDireito + ' m', det: '6 pilares pré-fabricados' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', padding: '10px 0', borderBottom: i < 5 ? '1px dashed #222' : 'none' }}>
+                  <div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#888', letterSpacing: '0.1em' }}>{item.l}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#555', marginTop: '2px' }}>{item.det}</div>
+                  </div>
+                  <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '20px', color: '#FF6B00' }}>{item.v}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ gridColumn: 'span 12', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>03 / RANKING</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '22px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Top 5 disciplinas por custo</h3>
+              </div>
+              {[...disciplinas].sort((a, b) => b.total - a.total).slice(0, 5).map((d, i) => {
+                const maxTotal = Math.max(...disciplinas.map(x => x.total));
+                const w = (d.total / maxTotal) * 100;
+                return (
+                  <div key={i} style={{ marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'baseline' }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#FF6B00', fontWeight: 700 }}>#{i + 1}</span>
+                        <span style={{ fontFamily: "'Archivo', sans-serif", fontSize: '14px', fontWeight: 600 }}>{d.nome}</span>
+                      </div>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#fff' }}>{fmtBRL(d.total)} <span style={{ color: '#666' }}>· {d.pct.toFixed(1)}%</span></span>
+                    </div>
+                    <div style={{ height: '8px', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ width: `${w}%`, height: '100%', background: i === 0 ? '#FF6B00' : 'linear-gradient(90deg, #FF6B00 0%, #993D00 100%)', transition: 'width 1s ease-out' }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'disciplinas' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px' }}>
+            <div style={{ gridColumn: 'span 8', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>GRÁFICO 01</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '22px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Material × Mão de obra por disciplina</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={420}>
+                <BarChart data={disciplinas} margin={{ top: 10, right: 10, bottom: 60, left: 0 }}>
+                  <CartesianGrid stroke="#222" strokeDasharray="2 4" vertical={false} />
+                  <XAxis dataKey="curto" stroke="#666" tick={{ fontSize: 10, fill: '#888' }} angle={-30} textAnchor="end" />
+                  <YAxis stroke="#666" tick={{ fontSize: 10, fill: '#888' }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 107, 0, 0.05)' }} />
+                  <Legend wrapperStyle={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
+                  <Bar dataKey="mat" stackId="a" fill="#FF6B00" name="Material" />
+                  <Bar dataKey="mo" stackId="a" fill="#4D1F00" name="Mão de Obra" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={{ gridColumn: 'span 4', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>GRÁFICO 02</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '20px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Distribuição</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={340}>
+                <PieChart>
+                  <Pie data={disciplinas} dataKey="total" nameKey="curto" cx="50%" cy="50%" innerRadius={55} outerRadius={120} paddingAngle={2}>
+                    {disciplinas.map((_, i) => <Cell key={i} fill={CORES_DISC[i % CORES_DISC.length]} stroke="#0a0a0a" strokeWidth={1} />)}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={{ gridColumn: 'span 12', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>TABELA 01</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '22px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Detalhamento por disciplina</h3>
+              </div>
+              <div style={{ overflow: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid #FF6B00' }}>
+                      <th style={{ textAlign: 'left', padding: '12px 8px', color: '#FF6B00', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '10px' }}>Disciplina</th>
+                      <th style={{ textAlign: 'right', padding: '12px 8px', color: '#FF6B00', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '10px' }}>Material</th>
+                      <th style={{ textAlign: 'right', padding: '12px 8px', color: '#FF6B00', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '10px' }}>Mão Obra</th>
+                      <th style={{ textAlign: 'right', padding: '12px 8px', color: '#FF6B00', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '10px' }}>Total</th>
+                      <th style={{ textAlign: 'right', padding: '12px 8px', color: '#FF6B00', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '10px' }}>% Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {disciplinas.map((d, i) => (
+                      <tr key={i} className="disc-row" style={{ borderBottom: '1px solid #1a1a1a' }}>
+                        <td style={{ padding: '12px 8px', color: '#fff', fontFamily: "'Archivo', sans-serif", fontWeight: 500 }}>{d.nome}</td>
+                        <td style={{ padding: '12px 8px', textAlign: 'right', color: '#ccc' }}>{fmtBRL(d.mat)}</td>
+                        <td style={{ padding: '12px 8px', textAlign: 'right', color: '#ccc' }}>{fmtBRL(d.mo)}</td>
+                        <td style={{ padding: '12px 8px', textAlign: 'right', color: '#FF6B00', fontWeight: 700 }}>{fmtBRL(d.total)}</td>
+                        <td style={{ padding: '12px 8px', textAlign: 'right', color: '#fff' }}>{d.pct.toFixed(2)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ borderTop: '2px solid #FF6B00', background: '#0a0a0a' }}>
+                      <td style={{ padding: '14px 8px', color: '#FF6B00', fontWeight: 800, fontFamily: "'Archivo Black', sans-serif", textTransform: 'uppercase' }}>TOTAL</td>
+                      <td style={{ padding: '14px 8px', textAlign: 'right', color: '#FF6B00', fontWeight: 800 }}>{fmtBRL(dados.capa.custoMateriais)}</td>
+                      <td style={{ padding: '14px 8px', textAlign: 'right', color: '#FF6B00', fontWeight: 800 }}>{fmtBRL(dados.capa.custoMaoObra)}</td>
+                      <td style={{ padding: '14px 8px', textAlign: 'right', color: '#FF6B00', fontWeight: 800 }}>{fmtBRL(TOTAL_DIRETO)}</td>
+                      <td style={{ padding: '14px 8px', textAlign: 'right', color: '#FF6B00', fontWeight: 800 }}>100%</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'curva-a' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px' }}>
+            <div style={{ gridColumn: 'span 12', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>PARETO 80/20</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '22px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Top {curvaA.length} itens críticos</h3>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#888', marginTop: '6px' }}>Itens que devem ter cotações duplas e contratos blindados antes do início.</div>
+              </div>
+              {curvaA.map((item, i) => {
+                const maxV = Math.max(...curvaA.map(x => x.valor));
+                const w = (item.valor / maxV) * 100;
+                return (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '50px 1fr 140px 80px', alignItems: 'center', gap: '16px', padding: '14px 0', borderBottom: i < curvaA.length - 1 ? '1px solid #1a1a1a' : 'none' }}>
+                    <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '32px', color: '#FF6B00', lineHeight: 1 }}>{String(i + 1).padStart(2, '0')}</div>
+                    <div>
+                      <div style={{ fontFamily: "'Archivo', sans-serif", fontSize: '14px', fontWeight: 600, color: '#fff', marginBottom: '6px' }}>{item.item}</div>
+                      <div style={{ height: '6px', background: '#0a0a0a' }}>
+                        <div style={{ width: `${w}%`, height: '100%', background: 'linear-gradient(90deg, #FF6B00, #993D00)' }} />
+                      </div>
+                    </div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', color: '#fff', fontWeight: 700, textAlign: 'right' }}>{fmtBRL(item.valor)}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', color: '#FF6B00', fontWeight: 700, textAlign: 'right' }}>{item.pct.toFixed(1)}%</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'cronograma' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px' }}>
+            <div style={{ gridColumn: 'span 12', background: '#111', border: '1px solid #222', padding: '28px', position: 'relative' }}>
+              <div className="corner-mark corner-tl" /><div className="corner-mark corner-br" />
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#FF6B00', letterSpacing: '0.2em' }}>CURVA S</div>
+                <h3 style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '22px', margin: '4px 0 0 0', textTransform: 'uppercase' }}>Cronograma físico-financeiro · {dados.capa.prazoMeses} meses</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={360}>
+                <AreaChart data={cronograma} margin={{ top: 20, right: 30, bottom: 10, left: 0 }}>
+                  <defs>
+                    <linearGradient id="gradOrange" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#FF6B00" stopOpacity={0.6} />
+                      <stop offset="100%" stopColor="#FF6B00" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="#222" strokeDasharray="2 4" />
+                  <XAxis dataKey="mes" stroke="#666" tick={{ fontSize: 12, fill: '#888' }} />
+                  <YAxis stroke="#666" tick={{ fontSize: 10, fill: '#888' }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#FF6B00', strokeDasharray: '3 3' }} />
+                  <Area type="monotone" dataKey="acumulado" stroke="#FF6B00" strokeWidth={3} fill="url(#gradOrange)" name="Acumulado" />
+                  <Line type="monotone" dataKey="mensal" stroke="#fff" strokeWidth={2} strokeDasharray="6 3" dot={{ fill: '#fff', r: 5 }} name="Mensal" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={{ gridColumn: 'span 12', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+              {cronograma.map((m, i) => {
+                const isPico = m.mensal > (TOTAL_OBRA / cronograma.length) * 1.2;
+                return (
+                  <div key={i} className="kpi-card" style={{ background: isPico ? '#FF6B00' : '#111', border: `1px solid ${isPico ? '#FF6B00' : '#222'}`, padding: '24px', position: 'relative', color: isPico ? '#000' : '#fff' }}>
+                    <div className="corner-mark corner-tl" style={{ borderColor: isPico ? '#000' : '#FF6B00' }} />
+                    <div className="corner-mark corner-br" style={{ borderColor: isPico ? '#000' : '#FF6B00' }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+                      <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '40px', lineHeight: 1, fontWeight: 900 }}>M{i + 1}</div>
+                      {isPico && <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', fontWeight: 700, background: '#000', color: '#FF6B00', padding: '4px 8px', letterSpacing: '0.15em' }}>PICO</div>}
+                    </div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', letterSpacing: '0.15em', opacity: 0.7, marginBottom: '4px' }}>DESEMBOLSO</div>
+                    <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '20px', fontWeight: 900 }}>{fmtBRLfull(m.mensal)}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', marginTop: '4px', opacity: 0.7 }}>{m.pct.toFixed(1)}% ACUMULADO</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'risco' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px' }}>
+            <div style={{ gridColumn: 'span 12', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+              {sensibilidade.map((s, i) => {
+                const isBase = s.cenario === 'BASE';
+                const isPess = s.cenario === 'PESSIMISTA';
+                const isOtim = s.cenario === 'OTIMISTA';
+                return (
+                  <div key={i} className="kpi-card" style={{ background: isBase ? '#FF6B00' : '#111', color: isBase ? '#000' : '#fff', border: `2px solid ${isBase ? '#FF6B00' : (isPess ? '#993D00' : '#666')}`, padding: '28px', position: 'relative' }}>
+                    <div className="corner-mark corner-tl" style={{ borderColor: isBase ? '#000' : '#FF6B00' }} />
+                    <div className="corner-mark corner-tr" style={{ borderColor: isBase ? '#000' : '#FF6B00' }} />
+                    <div className="corner-mark corner-bl" style={{ borderColor: isBase ? '#000' : '#FF6B00' }} />
+                    <div className="corner-mark corner-br" style={{ borderColor: isBase ? '#000' : '#FF6B00' }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em' }}>▸ CENÁRIO</div>
+                      {isPess && <ArrowUpRight size={20} />}
+                      {isOtim && <ArrowDownRight size={20} />}
+                      {isBase && <Target size={20} />}
+                    </div>
+                    <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '32px', fontWeight: 900, lineHeight: 1, marginBottom: '6px' }}>{s.cenario}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 700, marginBottom: '20px', opacity: 0.85 }}>VARIAÇÃO {s.variacao}</div>
+                    <div style={{ borderTop: `1px solid ${isBase ? 'rgba(0,0,0,0.2)' : '#333'}`, paddingTop: '14px' }}>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', opacity: 0.7, letterSpacing: '0.1em' }}>CUSTO TOTAL</div>
+                      <div style={{ fontFamily: "'Archivo Black', sans-serif", fontSize: '24px', fontWeight: 900 }}>{fmtBRLfull(s.total)}</div>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', marginTop: '2px', opacity: 0.7 }}>R$ {(s.m2 || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })} / m²</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <footer style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#555', letterSpacing: '0.1em' }}>
+          <div><span style={{ color: '#FF6B00', fontWeight: 700 }}>● </span>SINCRONIZADO COM GOOGLE SHEETS · ATUALIZA AUTOMÁTICO</div>
+          <div>DASHBOARD · CONFIDENCIAL</div>
+        </footer>
+      </div>
+    </div>
+  );
+}
