@@ -28,12 +28,15 @@ export default function GalpaoDashboard() {
       setCarregando(false);
     };
     document.head.appendChild(script);
-    // Timeout de 15 segundos
+    // Timeout de 15 segundos (só dispara se nada foi carregado)
     const timeout = setTimeout(() => {
-      if (carregando) {
-        setErro('Tempo esgotado ao buscar dados da planilha.');
-        setCarregando(false);
-      }
+      setDados(prev => {
+        if (!prev) {
+          setErro('Tempo esgotado ao buscar dados da planilha.');
+          setCarregando(false);
+        }
+        return prev;
+      });
     }, 15000);
     return () => clearTimeout(timeout);
   }, []);
