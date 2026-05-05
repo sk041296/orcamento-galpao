@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, AreaChart } from 'recharts';
 import { TrendingUp, TrendingDown, Building2, Calendar, AlertTriangle, Target, Wrench, MapPin, Ruler, Activity, ArrowUpRight, ArrowDownRight, Layers, Zap, RefreshCw } from 'lucide-react';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxD-xhYmq62DGN1Z89hXw8S0P6RTKPCIKZpUCOq2Zk2XWq0CVHQnyhvfqHzqB3b7AXXmg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxd5juexfuUvZVxqke6S1EzXkQ5m2HF7E6-7bXmvTeKVQgLt6SP3JFB_QNhpmAoxgK5Og/exec';
 
 export default function GalpaoDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
